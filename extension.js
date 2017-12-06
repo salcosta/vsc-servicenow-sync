@@ -124,7 +124,7 @@ var ServiceNowSync = (function () {
         };
 
         let usernamePromptOptions = {
-            "prompt": "Enter the Instance URL",
+            "prompt": "Enter the Username",
             "validateInput": (val) => {
                 if (val == '') return 'Please enter a valid value.';
 
@@ -133,7 +133,7 @@ var ServiceNowSync = (function () {
         };
 
         let passwordPromptOptions = {
-            "prompt": "Enter the Instance URL",
+            "prompt": "Enter the Password",
             "password": true,
             "validateInput": (val) => {
                 if (val == '') return 'Please enter a valid value.';

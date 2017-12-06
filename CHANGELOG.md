@@ -14,3 +14,8 @@ All notable changes to the "servicenow-sync" extension will be documented in thi
 - Compare file and remote record when saving
 - Compare file and remote record from explorer context menu
 - Open the current record in a web browser
+
+
+## [0.1.1] - 2017-12-06
+### Fixed
+- Create Connection popup labels were incorrect (Found by @Rob)

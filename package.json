@@ -2,15 +2,15 @@
   "name": "servicenow-sync",
   "author": "Sal Costa <costas0811@hotmail.com> (http://anerrantprogrammer.com",
   "displayName": "ServiceNow Sync",
-  "description": "ServiceNow Sync to Visual Studio Code",
-  "version": "0.1.0",
+  "description": "Sync records from ServiceNow to local files using VSC",
+  "version": "0.1.1",
   "license": "MIT",
   "publisher": "anerrantprogrammer",
   "engines": {
     "vscode": "^1.18.0"
   },
   "categories": [
-    "ServiceNow"
+    "Other"
   ],
   "activationEvents": [
     "*"
