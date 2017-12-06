@@ -1,0 +1,87 @@
+{
+  "name": "servicenow-sync",
+  "author": "Sal Costa <costas0811@hotmail.com> (http://anerrantprogrammer.com",
+  "displayName": "ServiceNow Sync",
+  "description": "ServiceNow Sync to Visual Studio Code",
+  "version": "0.1.0",
+  "license": "MIT",
+  "publisher": "anerrantprogrammer",
+  "engines": {
+    "vscode": "^1.18.0"
+  },
+  "categories": [
+    "ServiceNow"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./extension",
+  "contributes": {
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "sn_sync.syncRecord"
+        },
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "sn_sync.syncMultipleRecords"
+        },
+        {
+          "when": "!explorerResourceIsFolder",
+          "command": "sn_sync.compareFile"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "sn_sync.openRecordInBrowser",
+          "group": "navigation"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sn_sync.syncTable",
+        "title": "Sync Table"
+      },
+      {
+        "command": "sn_sync.enterConnectionSettings",
+        "title": "Connect To ServiceNow"
+      },
+      {
+        "command": "sn_sync.syncRecord",
+        "title": "Sync Record"
+      },
+      {
+        "command": "sn_sync.syncMultipleRecords",
+        "title": "Sync Multiple Records"
+      },
+      {
+        "command": "sn_sync.openRecordInBrowser",
+        "title": "Open Record In Browser"
+      },
+      {
+        "command": "sn_sync.compareFile",
+        "title": "Compare File To Server"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.6",
+    "eslint": "^4.6.1",
+    "@types/node": "^7.0.43",
+    "@types/mocha": "^2.2.42"
+  },
+  "dependencies": {
+    "diff": "^3.4.0",
+    "glob": "^7.1.2",
+    "lodash": "^4.17.4",
+    "opn": "^5.1.0",
+    "request": "^2.83.0"
+  }
+}
