@@ -19,3 +19,8 @@ All notable changes to the "servicenow-sync" extension will be documented in thi
 ## [0.1.1] - 2017-12-06
 ### Fixed
 - Create Connection popup labels were incorrect (Found by @Rob)
+
+## [0.1.2] - 2017-12-06
+### Added
+- Updated README with instructions
+- LICENSE
