@@ -68,4 +68,16 @@ This feature is not currently developed.
 
 ### Manually Updating a File
 
-1. Right click on a synchronized file and 
+1. Right click on a synchronized file and select 'Compare File to Server'
+2. If the remove file has been updated, you will be prompted to overwrite the local file, if you select 'No', no changes will be made.
+
+
+## Help
+
+Help is available in the [ServiceNow Devs Slack Channel](https://sndevs.slack.com/messages)
+
+## Social
+
+[Twitter](https://twitter.com/sn_aug)
+[Blog](http://anerrantprogrammer.com)
+[Github](https://github.com/salcosta)

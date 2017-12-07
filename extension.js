@@ -488,11 +488,6 @@ function activate(context) {
     let serviceNowSync = new ServiceNowSync();
     context.subscriptions.push(serviceNowSync);
     console.log('ServiceNow Sync Activated')
-
-    var uri = path.resolve(__dirname, 'readme.md');
-    vscode.commands.executeCommand('vscode.open', uri).then(function(res){
-        vscode.window.showTextDocument(result)
-    });
 }
 
 function deactivate() {
