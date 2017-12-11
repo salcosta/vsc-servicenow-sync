@@ -9,12 +9,13 @@ Allows you to save and edit ServiceNow records from Visual Studio Code.
 ## Usage
 
 ServiceNow Sync depends on the root workspace folder, base settings will be stored in this folder.  It is recommended that you create a working folder per each instance you wish to sync with.
+![Usage](images/setup.gif)
 
 ### Creating the Connection
 
 1. Open the Command Palette (Ctrl+Shift+P).
 2. Select 'Connect to ServiceNow'.
-3. Enter the full instance URL (example `https://myinstance.service-now.com`).
+3. Enter the full instance URL (example `https://myinstance.service-now.com/`).
 4. Enter the username.
 5. Enter the password.
 
@@ -38,7 +39,7 @@ Some tables - like `sys_ui_page` synchronize to multiple fields and these tables
 
 ### Pulling a file from ServiceNow
 
-1. Right click on a synchronized folder from the Explorer view.
+1. **Right click** on a synchronized folder from the Explorer view.
 2. Select 'Sync Record'.
 3. A list of all records in the table will pop up, select the record by the name (or sys id).
 
