@@ -148,7 +148,7 @@ var ServiceNowSync = (function () {
         request(options, function(error, response, body) {
             var sysparm_ck = body.split("var g_ck = '")[1].split('\'')[0];
 
-            if(!scope) scope = "global";
+            if(!scope) scope = "rhino.global";
             var evalOptions = {
                 'method': 'POST',
                 'url': rootSettings.instance + '/sys.scripts.do',
@@ -173,17 +173,42 @@ var ServiceNowSync = (function () {
     ServiceNowSync.prototype.evalCurrentFile = function() {
         var _this = this;
         var script = vscode.window.activeTextEditor.document.getText();
-        this.evalScript(script, "global", function(outputStr) {
-            _this.outputChannel.show(true);
-            _this.outputChannel.appendLine(outputStr);
+        this.listRecords("sys_app", "sys_id,name", "scope!=global", function(result) {
+            if (result) {
+                records = result;
+                let quickPickItems = _.map(result, function(obj) {
+                    return {
+                        "detail": obj.sys_id,
+                        "label": obj.name
+                    };
+                });
+                quickPickItems.unshift({"detail": "rhino.global", "label": "Global"});
+                vscode.window.showQuickPick(quickPickItems).then(function(selected) {
+                    _this.evalScript(script, selected, function(outputStr) {
+                        _this.outputChannel.show(true);
+                        _this.outputChannel.appendLine(outputStr);
+                    });
+                });
+            } else {
+                _this.evalScript(script, "rhino.global", function(outputStr) {
+                    _this.outputChannel.show(true);
+                    _this.outputChannel.appendLine(outputStr);
+                });
+            }
         });
     };
 
     ServiceNowSync.prototype.openEvalDocument = function() {
         vscode.workspace.openTextDocument({
-            "content": "//write your code you want to execute",
+            "content": "//write your code you want to execute\n",
             "language": "javascript"
-        }).then(doc => vscode.window.showTextDocument(doc));
+        }).then(doc => vscode.window.showTextDocument(doc))
+          .then(editor => {
+              const position = editor.selection.active;
+              var newPosition = position.with(1, 0);
+              var newSelection = new vscode.Selection(newPosition, newPosition);
+              editor.selection = newSelection;
+          });
     };
 
     ServiceNowSync.prototype.enterConnectionSettings = function () {
@@ -477,7 +502,7 @@ var ServiceNowSync = (function () {
                 vscode.window.showErrorMessage('Error 0161:' + error);
             }
 
-            cb(null);
+            //cb(null); Why calling the callback function a second time?
         }
 
     };
