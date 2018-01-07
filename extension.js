@@ -74,7 +74,7 @@ var ServiceNowSync = (function () {
                 }
             }
         });
-    }
+    };
 
     ServiceNowSync.prototype.compareFile = function (file) {
         let _this = this;
@@ -106,7 +106,7 @@ var ServiceNowSync = (function () {
                 }
             });
         }
-    }
+    };
 
     ServiceNowSync.prototype.enterConnectionSettings = function () {
         let _this = this;
@@ -115,6 +115,7 @@ var ServiceNowSync = (function () {
             password = '';
 
         let instancePromptOptions = {
+            "ingoreFocusOut": true,
             "prompt": "Enter the Instance URL",
             "validateInput": (val) => {
                 if (val == '') return 'Please enter a valid value.';
@@ -124,6 +125,7 @@ var ServiceNowSync = (function () {
         };
 
         let usernamePromptOptions = {
+            "ignoreFocusOut": true,
             "prompt": "Enter the Username",
             "validateInput": (val) => {
                 if (val == '') return 'Please enter a valid value.';
@@ -133,6 +135,7 @@ var ServiceNowSync = (function () {
         };
 
         let passwordPromptOptions = {
+            "ignoreFocusOut": true,
             "prompt": "Enter the Password",
             "password": true,
             "validateInput": (val) => {
@@ -156,24 +159,24 @@ var ServiceNowSync = (function () {
                 });
             });
         });
-    }
+    };
 
     ServiceNowSync.prototype.isSynced = function () {
         let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
         let file = path.resolve(rootFolder, 'service-now.json');
         return fs.existsSync(file);
-    }
+    };
 
     ServiceNowSync.prototype.getRootSettings = function () {
         let _this = this;
         let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
         return _this.readSettings(rootFolder);
-    }
+    };
 
     ServiceNowSync.prototype.isFolderSynced = function (folder) {
         let file = path.resolve(folder, 'service-now.json');
         return fs.existsSync(file);
-    }
+    };
 
     ServiceNowSync.prototype.createConnectionFile = function (params) {
         let _this = this;
@@ -200,7 +203,7 @@ var ServiceNowSync = (function () {
                 if (tableFieldList[table].length > 1) _this.createMultiFolder(table);
             }
         });
-    }
+    };
 
     ServiceNowSync.prototype.pullMultipleFiles = function (selectedFolder) {
         let _this = this;
@@ -216,7 +219,7 @@ var ServiceNowSync = (function () {
         vscode.window.showInputBox(queryPromptOptions).then(function (val) {
             _this.pullFile(selectedFolder, val);
         });
-    }
+    };
 
     ServiceNowSync.prototype.pullFile = function (selectedFolder, query) {
         let _this = this;
@@ -339,7 +342,7 @@ var ServiceNowSync = (function () {
             opn(rootSettings.instance + '/' + folderSettings.table + '.do?sys_id=' + sys_id);
         }
 
-    }
+    };
 
     ServiceNowSync.prototype.getRecord = function (settings, sys_id, cb) {
         let _this = this;
@@ -401,12 +404,12 @@ var ServiceNowSync = (function () {
             cb(null);
         }
 
-    }
+    };
 
     ServiceNowSync.prototype.writeSettings = function (folder, settings) {
         let file = path.resolve(folder, 'service-now.json');
         fs.writeFileSync(file, JSON.stringify(settings, false, 4));
-    }
+    };
 
     ServiceNowSync.prototype.readSettings = function (folder) {
         let file = path.resolve(folder, 'service-now.json');
@@ -421,7 +424,7 @@ var ServiceNowSync = (function () {
         }
         return false
 
-    }
+    };
 
     ServiceNowSync.prototype.createSingleFolder = function (table) {
         let _this = this;
@@ -441,7 +444,7 @@ var ServiceNowSync = (function () {
             _this.writeSettings(folderPath, folderSettings)
         }
 
-    }
+    };
 
     ServiceNowSync.prototype.createMultiFolder = function (table) {
         let _this = this;
@@ -474,8 +477,7 @@ var ServiceNowSync = (function () {
                 _this.writeSettings(subFolderPath, folderSettings);
             }
         });
-    }
-
+    };
 
     // ServiceNowSync.prototype.isFolderView = function () {
     //     return typeof vscode.workspace.workspaceFolders !== 'undefined';
