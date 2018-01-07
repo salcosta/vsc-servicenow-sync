@@ -7,6 +7,7 @@ const request = require('request');
 const jsdiff = require('diff');
 const glob = require('glob');
 const opn = require('opn');
+const html2plain = require('html2plaintext');
 
 var ServiceNowSync = (function () {
     function ServiceNowSync() {
@@ -18,9 +19,12 @@ var ServiceNowSync = (function () {
         subscriptions.push(vscode.commands.registerCommand('sn_sync.syncMultipleRecords', this.pullMultipleFiles, this));
         subscriptions.push(vscode.commands.registerCommand('sn_sync.openRecordInBrowser', this.openRecordInBrowser, this));
         subscriptions.push(vscode.commands.registerCommand('sn_sync.compareFile', this.compareFile, this));
+        subscriptions.push(vscode.commands.registerCommand('sn_sync.openEvalDocument', this.openEvalDocument, this));
+        subscriptions.push(vscode.commands.registerCommand('sn_sync.evalScript', this.evalCurrentFile, this));
 
         vscode.workspace.onWillSaveTextDocument(this.pushFile, this, subscriptions);
 
+        this.outputChannel = vscode.window.createOutputChannel('SN-Sync');
         this._disposable = vscode.Disposable.from.apply(vscode.Disposable, subscriptions);
     }
 
@@ -106,6 +110,80 @@ var ServiceNowSync = (function () {
                 }
             });
         }
+    };
+
+    ServiceNowSync.prototype.evalScript = function(script, scope, cb) {
+        let _this = this;
+        let rootSettings = _this.getRootSettings();
+
+        var jar = request.jar();
+        var headers = {
+            "Accept": "*/*",
+            "Connection": "keep-alive",
+            "Cache-Control": "max-age=0",
+            "User-Agent": "VSC-SERVICENOW-SYNC",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "en-US,en;q=0.8",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        };
+        var authHeader = rootSettings.auth.replace("Basic ", "");
+        var authDecoded = new Buffer(authHeader, 'base64').toString('ascii');
+        var options = {
+            "method": "POST",
+            "url": rootSettings.instance + '/login.do',
+            "followAllRedirects": true,
+            "headers": headers,
+            "gzip": true,
+            "jar": jar,
+            "form": {
+                "user_name": authDecoded.split(":")[0],
+                "user_password": authDecoded.split(":")[1],
+                "remember_me": "true",
+                "sys_action": "sysverb_login"
+            }
+        };
+
+        vscode.window.setStatusBarMessage('⏳ Executing Code in ServiceNow ...', 2000);
+
+        request(options, function(error, response, body) {
+            var sysparm_ck = body.split("var g_ck = '")[1].split('\'')[0];
+
+            if(!scope) scope = "global";
+            var evalOptions = {
+                'method': 'POST',
+                'url': rootSettings.instance + '/sys.scripts.do',
+                "followAllRedirects": true,
+                "headers": headers,
+                "gzip": true,
+                "jar": jar,
+                'form': {
+                    "script": script,
+                    "sysparm_ck": sysparm_ck,
+                    "sys_scope": scope,
+                    "runscript": "Run script",
+                    "quota_managed_transaction": "on"
+                }
+            };
+            request(evalOptions, function(error, response, body) {
+                cb(html2plain(body));
+            });
+        });
+    };
+
+    ServiceNowSync.prototype.evalCurrentFile = function() {
+        var _this = this;
+        var script = vscode.window.activeTextEditor.document.getText();
+        this.evalScript(script, "global", function(outputStr) {
+            _this.outputChannel.show(true);
+            _this.outputChannel.appendLine(outputStr);
+        });
+    };
+
+    ServiceNowSync.prototype.openEvalDocument = function() {
+        vscode.workspace.openTextDocument({
+            "content": "//write your code you want to execute",
+            "language": "javascript"
+        }).then(doc => vscode.window.showTextDocument(doc));
     };
 
     ServiceNowSync.prototype.enterConnectionSettings = function () {
@@ -324,9 +402,7 @@ var ServiceNowSync = (function () {
             "headers": {
                 "Authorization": rootSettings.auth
             }
-
         }
-
     };
 
     ServiceNowSync.prototype.openRecordInBrowser = function () {
