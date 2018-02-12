@@ -354,10 +354,10 @@ var ServiceNowSync = (function () {
             fields = _.uniq(fields);
         }
 
-        if (typeof query === 'undefined') {
-            _this.listRecords(settings.table, fields, query, displayRecordList);
-        } else {
+        if (typeof query === 'string') {
             _this.listRecords(settings.table, fields, query, displayRecordConfirmation);
+        } else {
+            _this.listRecords(settings.table, fields, query, displayRecordList);
         }
 
         function displayRecordList(result) {
