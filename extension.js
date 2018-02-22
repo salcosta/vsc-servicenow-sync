@@ -248,7 +248,7 @@ var ServiceNowSync = (function () {
             fields = _.uniq(fields);
         }
 
-        if (typeof query === 'undefined') {
+        if (typeof query === 'object') {
             _this.listRecords(settings.table, fields, query, displayRecordList);
         } else {
             _this.listRecords(settings.table, fields, query, displayRecordConfirmation);
