@@ -283,22 +283,23 @@ var ServiceNowSync = (function () {
         }
 
         function createFile(record) {
-            if (typeof settings.multi !== 'undefined' && settings.multi === true) {
-                _.each(subSettings, (setting) => {
-                    let fileName = record[setting.display] + '.' + setting.extension;
-                    let filePath = path.resolve(setting.folder, fileName);
-                    fs.writeFileSync(filePath, record[setting.field]);
 
-                    setting.files[fileName] = record.sys_id;
-                    _this.writeSettings(setting.folder, setting);
-                });
-            } else {
-                let fileName = record[settings.display] + '.' + settings.extension;
+            function saveFileAndUpdateSettings(settings, folder) {
+                let fileName = (record[settings.display] + '.' + settings.extension).replace(/\//g, "#");
                 let filePath = path.resolve(folder, fileName);
+                
                 fs.writeFileSync(filePath, record[settings.field]);
-
                 settings.files[fileName] = record.sys_id;
                 _this.writeSettings(folder, settings);
+            }
+
+            if (typeof settings.multi !== 'undefined' && settings.multi === true) {
+                _.each(subSettings, (setting) => {
+                    saveFileAndUpdateSettings(setting, setting.folder);
+                });
+            } else {
+                saveFileAndUpdateSettings(settings, folder);
+
             }
         }
 
