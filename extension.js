@@ -7,6 +7,7 @@ const request = require('request');
 const jsdiff = require('diff');
 const glob = require('glob');
 const opn = require('opn');
+const html2plain = require('html2plaintext');
 
 var ServiceNowSync = (function () {
     function ServiceNowSync() {
@@ -18,9 +19,12 @@ var ServiceNowSync = (function () {
         subscriptions.push(vscode.commands.registerCommand('sn_sync.syncMultipleRecords', this.pullMultipleFiles, this));
         subscriptions.push(vscode.commands.registerCommand('sn_sync.openRecordInBrowser', this.openRecordInBrowser, this));
         subscriptions.push(vscode.commands.registerCommand('sn_sync.compareFile', this.compareFile, this));
+        subscriptions.push(vscode.commands.registerCommand('sn_sync.openEvalDocument', this.openEvalDocument, this));
+        subscriptions.push(vscode.commands.registerCommand('sn_sync.evalScript', this.evalCurrentFile, this));
 
         vscode.workspace.onWillSaveTextDocument(this.pushFile, this, subscriptions);
 
+        this.outputChannel = vscode.window.createOutputChannel('SN-Sync');
         this._disposable = vscode.Disposable.from.apply(vscode.Disposable, subscriptions);
     }
 
@@ -74,7 +78,7 @@ var ServiceNowSync = (function () {
                 }
             }
         });
-    }
+    };
 
     ServiceNowSync.prototype.compareFile = function (file) {
         let _this = this;
@@ -106,7 +110,106 @@ var ServiceNowSync = (function () {
                 }
             });
         }
-    }
+    };
+
+    ServiceNowSync.prototype.evalScript = function(script, scope, cb) {
+        let _this = this;
+        let rootSettings = _this.getRootSettings();
+
+        var jar = request.jar();
+        var headers = {
+            "Accept": "*/*",
+            "Connection": "keep-alive",
+            "Cache-Control": "max-age=0",
+            "User-Agent": "VSC-SERVICENOW-SYNC",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "en-US,en;q=0.8",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        };
+        var authHeader = rootSettings.auth.replace("Basic ", "");
+        var authDecoded = new Buffer(authHeader, 'base64').toString('ascii');
+        var options = {
+            "method": "POST",
+            "url": rootSettings.instance + '/login.do',
+            "followAllRedirects": true,
+            "headers": headers,
+            "gzip": true,
+            "jar": jar,
+            "form": {
+                "user_name": authDecoded.split(":")[0],
+                "user_password": authDecoded.split(":")[1],
+                "remember_me": "true",
+                "sys_action": "sysverb_login"
+            }
+        };
+
+        vscode.window.setStatusBarMessage('⏳ Executing Code in ServiceNow ...', 2000);
+
+        request(options, function(error, response, body) {
+            var sysparm_ck = body.split("var g_ck = '")[1].split('\'')[0];
+
+            if(!scope) scope = "rhino.global";
+            var evalOptions = {
+                'method': 'POST',
+                'url': rootSettings.instance + '/sys.scripts.do',
+                "followAllRedirects": true,
+                "headers": headers,
+                "gzip": true,
+                "jar": jar,
+                'form': {
+                    "script": script,
+                    "sysparm_ck": sysparm_ck,
+                    "sys_scope": scope,
+                    "runscript": "Run script",
+                    "quota_managed_transaction": "on"
+                }
+            };
+            request(evalOptions, function(error, response, body) {
+                cb(html2plain(body));
+            });
+        });
+    };
+
+    ServiceNowSync.prototype.evalCurrentFile = function() {
+        var _this = this;
+        var script = vscode.window.activeTextEditor.document.getText();
+        this.listRecords("sys_app", "sys_id,name", "scope!=global", function(result) {
+            if (result) {
+                records = result;
+                let quickPickItems = _.map(result, function(obj) {
+                    return {
+                        "detail": obj.sys_id,
+                        "label": obj.name
+                    };
+                });
+                quickPickItems.unshift({"detail": "rhino.global", "label": "Global"});
+                vscode.window.showQuickPick(quickPickItems).then(function(selected) {
+                    _this.evalScript(script, selected, function(outputStr) {
+                        _this.outputChannel.show(true);
+                        _this.outputChannel.appendLine(outputStr);
+                    });
+                });
+            } else {
+                _this.evalScript(script, "rhino.global", function(outputStr) {
+                    _this.outputChannel.show(true);
+                    _this.outputChannel.appendLine(outputStr);
+                });
+            }
+        });
+    };
+
+    ServiceNowSync.prototype.openEvalDocument = function() {
+        vscode.workspace.openTextDocument({
+            "content": "//write your code you want to execute\n",
+            "language": "javascript"
+        }).then(doc => vscode.window.showTextDocument(doc))
+          .then(editor => {
+              const position = editor.selection.active;
+              var newPosition = position.with(1, 0);
+              var newSelection = new vscode.Selection(newPosition, newPosition);
+              editor.selection = newSelection;
+          });
+    };
 
     ServiceNowSync.prototype.enterConnectionSettings = function () {
         let _this = this;
@@ -115,6 +218,7 @@ var ServiceNowSync = (function () {
             password = '';
 
         let instancePromptOptions = {
+            "ingoreFocusOut": true,
             "prompt": "Enter the Instance URL",
             "validateInput": (val) => {
                 if (val == '') return 'Please enter a valid value.';
@@ -124,6 +228,7 @@ var ServiceNowSync = (function () {
         };
 
         let usernamePromptOptions = {
+            "ignoreFocusOut": true,
             "prompt": "Enter the Username",
             "validateInput": (val) => {
                 if (val == '') return 'Please enter a valid value.';
@@ -133,6 +238,7 @@ var ServiceNowSync = (function () {
         };
 
         let passwordPromptOptions = {
+            "ignoreFocusOut": true,
             "prompt": "Enter the Password",
             "password": true,
             "validateInput": (val) => {
@@ -156,24 +262,24 @@ var ServiceNowSync = (function () {
                 });
             });
         });
-    }
+    };
 
     ServiceNowSync.prototype.isSynced = function () {
         let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
         let file = path.resolve(rootFolder, 'service-now.json');
         return fs.existsSync(file);
-    }
+    };
 
     ServiceNowSync.prototype.getRootSettings = function () {
         let _this = this;
         let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
         return _this.readSettings(rootFolder);
-    }
+    };
 
     ServiceNowSync.prototype.isFolderSynced = function (folder) {
         let file = path.resolve(folder, 'service-now.json');
         return fs.existsSync(file);
-    }
+    };
 
     ServiceNowSync.prototype.createConnectionFile = function (params) {
         let _this = this;
@@ -200,7 +306,7 @@ var ServiceNowSync = (function () {
                 if (tableFieldList[table].length > 1) _this.createMultiFolder(table);
             }
         });
-    }
+    };
 
     ServiceNowSync.prototype.pullMultipleFiles = function (selectedFolder) {
         let _this = this;
@@ -216,7 +322,7 @@ var ServiceNowSync = (function () {
         vscode.window.showInputBox(queryPromptOptions).then(function (val) {
             _this.pullFile(selectedFolder, val);
         });
-    }
+    };
 
     ServiceNowSync.prototype.pullFile = function (selectedFolder, query) {
         let _this = this;
@@ -248,10 +354,10 @@ var ServiceNowSync = (function () {
             fields = _.uniq(fields);
         }
 
-        if (typeof query === 'undefined') {
-            _this.listRecords(settings.table, fields, query, displayRecordList);
-        } else {
+        if (typeof query === 'string') {
             _this.listRecords(settings.table, fields, query, displayRecordConfirmation);
+        } else {
+            _this.listRecords(settings.table, fields, query, displayRecordList);
         }
 
         function displayRecordList(result) {
@@ -321,9 +427,7 @@ var ServiceNowSync = (function () {
             "headers": {
                 "Authorization": rootSettings.auth
             }
-
         }
-
     };
 
     ServiceNowSync.prototype.openRecordInBrowser = function () {
@@ -339,7 +443,7 @@ var ServiceNowSync = (function () {
             opn(rootSettings.instance + '/' + folderSettings.table + '.do?sys_id=' + sys_id);
         }
 
-    }
+    };
 
     ServiceNowSync.prototype.getRecord = function (settings, sys_id, cb) {
         let _this = this;
@@ -398,15 +502,15 @@ var ServiceNowSync = (function () {
                 vscode.window.showErrorMessage('Error 0161:' + error);
             }
 
-            cb(null);
+            //cb(null); Why calling the callback function a second time?
         }
 
-    }
+    };
 
     ServiceNowSync.prototype.writeSettings = function (folder, settings) {
         let file = path.resolve(folder, 'service-now.json');
         fs.writeFileSync(file, JSON.stringify(settings, false, 4));
-    }
+    };
 
     ServiceNowSync.prototype.readSettings = function (folder) {
         let file = path.resolve(folder, 'service-now.json');
@@ -421,7 +525,7 @@ var ServiceNowSync = (function () {
         }
         return false
 
-    }
+    };
 
     ServiceNowSync.prototype.createSingleFolder = function (table) {
         let _this = this;
@@ -441,7 +545,7 @@ var ServiceNowSync = (function () {
             _this.writeSettings(folderPath, folderSettings)
         }
 
-    }
+    };
 
     ServiceNowSync.prototype.createMultiFolder = function (table) {
         let _this = this;
@@ -474,8 +578,7 @@ var ServiceNowSync = (function () {
                 _this.writeSettings(subFolderPath, folderSettings);
             }
         });
-    }
-
+    };
 
     // ServiceNowSync.prototype.isFolderView = function () {
     //     return typeof vscode.workspace.workspaceFolders !== 'undefined';

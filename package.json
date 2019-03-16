@@ -42,27 +42,35 @@
     "commands": [
       {
         "command": "sn_sync.syncTable",
-        "title": "Sync Table"
+        "title": "SNSync: Sync Table"
       },
       {
         "command": "sn_sync.enterConnectionSettings",
-        "title": "Connect To ServiceNow"
+        "title": "SNSync: Connect To ServiceNow"
       },
       {
         "command": "sn_sync.syncRecord",
-        "title": "Sync Record"
+        "title": "SNSync: Sync Record"
       },
       {
         "command": "sn_sync.syncMultipleRecords",
-        "title": "Sync Multiple Records"
+        "title": "SNSync: Sync Multiple Records"
       },
       {
         "command": "sn_sync.openRecordInBrowser",
-        "title": "Open Record In Browser"
+        "title": "SNSync: Open Record In Browser"
       },
       {
         "command": "sn_sync.compareFile",
-        "title": "Compare File To Server"
+        "title": "SNSync: Compare File To Server"
+      },
+      {
+        "command": "sn_sync.openEvalDocument",
+        "title": "SNSync: Open Empty Javascript File"
+      },
+      {
+        "command": "sn_sync.evalScript",
+        "title": "SNSync: Execute current file"
       }
     ]
   },
@@ -80,6 +88,7 @@
   "dependencies": {
     "diff": "^3.4.0",
     "glob": "^7.1.2",
+    "html2plaintext": "^2.0.1",
     "lodash": "^4.17.4",
     "opn": "^5.1.0",
     "request": "^2.83.0"
