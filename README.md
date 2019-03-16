@@ -9,7 +9,6 @@ Allows you to save and edit ServiceNow records from Visual Studio Code.
 ## Usage
 
 ServiceNow Sync depends on the root workspace folder, base settings will be stored in this folder.  It is recommended that you create a working folder per each instance you wish to sync with.
-![Usage](images/setup.gif)
 
 ### Creating the Connection
 
