@@ -401,7 +401,7 @@ module.exports = {
     }],
     "sp_css": [{
         "field": "css",
-        "extension": "css"
+        "extension": "scss"
     }],
     "sp_instance": [{
         "field": "css",

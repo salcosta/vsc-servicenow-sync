@@ -35,42 +35,42 @@
       "editor/context": [
         {
           "command": "sn_sync.openRecordInBrowser",
-          "group": "navigation"
+          "group": "z_commands"
         }
       ]
     },
     "commands": [
       {
         "command": "sn_sync.syncTable",
-        "title": "SNSync: Sync Table"
+        "title": "SN Sync: Sync Table"
       },
       {
         "command": "sn_sync.enterConnectionSettings",
-        "title": "SNSync: Connect To ServiceNow"
+        "title": "SN Sync: Connect To ServiceNow"
       },
       {
         "command": "sn_sync.syncRecord",
-        "title": "SNSync: Sync Record"
+        "title": "SN Sync: Sync Record"
       },
       {
         "command": "sn_sync.syncMultipleRecords",
-        "title": "SNSync: Sync Multiple Records"
+        "title": "SN Sync: Sync Multiple Records"
       },
       {
         "command": "sn_sync.openRecordInBrowser",
-        "title": "SNSync: Open Record In Browser"
+        "title": "SN Sync: Open Record In Browser"
       },
+      {
+        "command": "sn_sync.updateScope",
+        "title": "SN Sync: Set Scope"
+      },      
       {
         "command": "sn_sync.compareFile",
-        "title": "SNSync: Compare File To Server"
-      },
-      {
-        "command": "sn_sync.openEvalDocument",
-        "title": "SNSync: Open Empty Javascript File"
+        "title": "SN Sync: Compare File To Server"
       },
       {
         "command": "sn_sync.evalScript",
-        "title": "SNSync: Execute current file"
+        "title": "SN Sync: Execute current file"
       }
     ]
   },
@@ -81,6 +81,7 @@
   "devDependencies": {
     "typescript": "^2.6.1",
     "vscode": "^1.1.6",
+    "vscode-debugadapter": "1.33.0",
     "eslint": "^4.6.1",
     "@types/node": "^7.0.43",
     "@types/mocha": "^2.2.42"
@@ -91,6 +92,7 @@
     "html2plaintext": "^2.0.1",
     "lodash": "^4.17.4",
     "opn": "^5.1.0",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "sanitize-filename": "^1.6.1"
   }
 }
