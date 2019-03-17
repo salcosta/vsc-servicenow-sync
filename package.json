@@ -3,6 +3,10 @@
   "author": "Sal Costa <costas0811@hotmail.com> (http://anerrantprogrammer.com",
   "displayName": "ServiceNow Sync",
   "description": "Sync records from ServiceNow to local files using VSC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salcosta/vsc-servicenow-sync.git"
+  },
   "version": "0.2.0",
   "license": "MIT",
   "publisher": "anerrantprogrammer",
