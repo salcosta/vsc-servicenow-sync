@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/salcosta/vsc-servicenow-sync.git"
   },
-  "version": "0.2.0",
+  "version": "0.2.2",
   "license": "MIT",
   "publisher": "anerrantprogrammer",
   "engines": {
@@ -67,7 +67,7 @@
       {
         "command": "sn_sync.updateScope",
         "title": "SN Sync: Set Scope"
-      },      
+      },
       {
         "command": "sn_sync.compareFile",
         "title": "SN Sync: Compare File To Server"
@@ -85,7 +85,6 @@
   "devDependencies": {
     "typescript": "^2.6.1",
     "vscode": "^1.1.6",
-    "vscode-debugadapter": "1.33.0",
     "eslint": "^4.6.1",
     "@types/node": "^7.0.43",
     "@types/mocha": "^2.2.42"

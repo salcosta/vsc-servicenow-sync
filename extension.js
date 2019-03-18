@@ -1,5 +1,4 @@
 const vscode = require('vscode');
-const debugProtocol = require('vscode-debugprotocol');
 const fs = require('fs');
 const path = require('path');
 const tableFieldList = require('./tables');
