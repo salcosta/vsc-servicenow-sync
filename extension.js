@@ -16,6 +16,7 @@ var ServiceNowSync = (function () {
         let subscriptions = [];
 
         subscriptions.push(vscode.commands.registerCommand('sn_sync.enterConnectionSettings', this.enterConnectionSettings, this));
+        subscriptions.push(vscode.commands.registerCommand('sn_sync.enterProxySettings', this.enterProxySettings, this));
         subscriptions.push(vscode.commands.registerCommand('sn_sync.syncTable', this.syncTable, this));
         subscriptions.push(vscode.commands.registerCommand('sn_sync.syncRecord', this.pullFile, this));
         subscriptions.push(vscode.commands.registerCommand('sn_sync.syncMultipleRecords', this.pullMultipleFiles, this));
@@ -162,6 +163,8 @@ var ServiceNowSync = (function () {
             }
         };
 
+        _this._addProxy(options);
+
         request(options, function (error, response, body) {
             var sysparm_ck = body.split("var g_ck = '")[1].split('\'')[0];
 
@@ -181,6 +184,8 @@ var ServiceNowSync = (function () {
                     "quota_managed_transaction": "on"
                 }
             };
+            _this._addProxy(evalOptions);
+
             request(evalOptions, function (error, response, body) {
                 cb(html2plain(body));
             });
@@ -279,6 +284,81 @@ var ServiceNowSync = (function () {
         });
     };
 
+    ServiceNowSync.prototype.enterProxySettings = function () {
+        let _this = this;
+        let proxyUrl = '',
+            proxyPort = null,
+            proxyUsername = '',
+            proxyPassword = '';
+
+        let proxyUrlPrompt = {
+            "ingoreFocusOut": true,
+            "prompt": "Enter the Proxy URL (or leave blank to disable proxy)",
+            "validateInput": (val) => {
+                return null;
+            }
+        };
+
+        let proxyPortPrompt = {
+            "ignoreFocusOut": true,
+            "prompt": "Enter the Proxy Port",
+            "validateInput": (val) => {
+                return null;
+            }
+        };
+
+        let proxyUserPrompt = {
+            "ignoreFocusOut": true,
+            "prompt": "Enter the Proxy User (or leave blank)",
+            "validateInput": (val) => {
+                return null;
+            }
+        };
+
+        let proxyPasswordPrompt = {
+            "ignoreFocusOut": true,
+            "prompt": "Enter the Proxy Password (or leave blank)",
+            "password": true,
+            "validateInput": (val) => {
+                return null;
+            }
+        };
+
+        vscode.window.showInputBox(proxyUrlPrompt).then((val) => {
+            proxyUrl = val;
+            if (proxyUrl == '') {
+                _this._updateProxy(null);
+            } else {
+                vscode.window.showInputBox(proxyPortPrompt).then((val) => {
+                    if (val != '') {
+                        proxyPort = val;
+                    }
+
+                    vscode.window.showInputBox(proxyUserPrompt).then((val) => {
+                        proxyUsername = val;
+                        if (proxyUsername != '') {
+                            vscode.window.showInputBox(proxyPasswordPrompt).then((val) => {
+                                proxyPassword = val;
+                                _this._updateProxy({
+                                    "url": proxyUrl,
+                                    "port": proxyPort,
+                                    "auth": new Buffer.from(proxyUsername + ':' + proxyPassword).toString('base64')
+                                });
+                            });
+                        } else {
+                            _this._updateProxy({
+                                "url": proxyUrl,
+                                "port": proxyPort,
+                                "auth": null
+                            });
+                        }
+                    });
+                });
+            }
+
+        });
+    };
+
     ServiceNowSync.prototype.isSynced = function () {
         let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
         let file = path.resolve(rootFolder, 'service-now.json');
@@ -296,6 +376,15 @@ var ServiceNowSync = (function () {
         let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
         let rootSettings = _this.getRootSettings();
         rootSettings.scope = scope;
+
+        _this.writeSettings(rootFolder, rootSettings);
+    }
+
+    ServiceNowSync.prototype._updateProxy = function (proxySettings) {
+        let _this = this;
+        let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
+        let rootSettings = _this.getRootSettings();
+        rootSettings.proxy = proxySettings;
 
         _this.writeSettings(rootFolder, rootSettings);
     }
@@ -321,13 +410,44 @@ var ServiceNowSync = (function () {
         let _this = this;
 
         let quickPickOptions = _.map(tableFieldList, (obj, key) => {
-            return key
+            if(key=='CapIO Suite'){
+                return {
+                    detail: '⸌{◔◔}⸍ CapIO Automated Testing by Cerna Solutions',
+                    label: key
+                }
+            } else {
+                return key
+            }
         });
 
-
-
         vscode.window.showQuickPick(quickPickOptions).then((table) => {
-            if (typeof tableFieldList[table] !== 'undefined') {
+            if (typeof table.label !== 'undefined' && table.label == 'CapIO Suite') {
+                _this.listRecords('x_cerso_capio_test_suite', ['sys_id', 'name'].join(','), undefined, function (result) {
+
+                    if (result) {
+                        records = result;
+                        let quickPickItems = _.map(result, function (obj) {
+                            return {
+                                "detail": obj.sys_id,
+                                "label": obj.name
+                            };
+                        });
+
+                        vscode.window.showQuickPick(quickPickItems).then(function (selected) {
+                            if (selected) {
+                                let path = _this.createGroupedFolder('x_cerso_capio_test_case', selected.label);
+                                _this.pullFile({ _fsPath: path }, undefined, 'test_suite=' + selected.detail);
+                            }
+                        });
+
+                    } else {
+                        vscode.window.setStatusBarMessage('❌️ No Suites Found', 2000);
+                    }
+                });
+            } else if (table == 'Custom Table') {
+                _this._syncCustomTable();
+
+            } else if (typeof tableFieldList[table] !== 'undefined') {
                 if (tableFieldList[table].length === 1) _this.createSingleFolder(table);
                 if (tableFieldList[table].length > 1) {
                     let multiFolderChoiceQuickPick = [
@@ -346,6 +466,81 @@ var ServiceNowSync = (function () {
             }
         });
     };
+
+    ServiceNowSync.prototype._syncCustomTable = function () {
+        let _this = this;
+        let table = '',
+            display = '',
+            field = '',
+            extension = '';
+
+        let tableNamePrompt = {
+            "ingoreFocusOut": true,
+            "prompt": "Enter the table name",
+            "validateInput": (val) => {
+                if (val == '') return 'Please enter a valid value.';
+
+                return null;
+            }
+        };
+
+        let displayNamePrompt = {
+            "ingoreFocusOut": true,
+            "prompt": "Enter the display field name",
+            "validateInput": (val) => {
+                if (val == '') return 'Please enter a valid value.';
+
+                return null;
+            }
+        };
+
+        let bodyFieldNamePrompt = {
+            "ingoreFocusOut": true,
+            "prompt": "Enter the field to sync",
+            "validateInput": (val) => {
+                if (val == '') return 'Please enter a valid value.';
+
+                return null;
+            }
+        };
+
+        let extensionPrompt = {
+            "ingoreFocusOut": true,
+            "prompt": "Enter the file type",
+            "validateInput": (val) => {
+                if (val == '') return 'Please enter a valid value.';
+
+                return null;
+            }
+        };
+
+        vscode.window.showInputBox(tableNamePrompt).then((val) => {
+            table = val;
+            vscode.window.showInputBox(displayNamePrompt).then((val) => {
+                display = val;
+                vscode.window.showInputBox(bodyFieldNamePrompt).then((val) => {
+                    field = val;
+                    vscode.window.showInputBox(extensionPrompt).then((val) => {
+                        extension = val;
+                        let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
+                        let folderPath = path.resolve(rootFolder, table);
+                        let folderSettings = {
+                            "files": {},
+                            "extension": extension,
+                            "table": table,
+                            "display": display,
+                            "field": field
+                        };
+
+                        if (!fs.existsSync(folderPath)) {
+                            fs.mkdirSync(folderPath);
+                            _this.writeSettings(folderPath, folderSettings)
+                        }
+                    });
+                });
+            });
+        });
+    }
 
     ServiceNowSync.prototype.pullMultipleFiles = function (selectedFolder) {
         let _this = this;
@@ -510,14 +705,43 @@ var ServiceNowSync = (function () {
         let _this = this;
         let rootSettings = _this.getRootSettings();
 
-        return {
+        var options = {
             "method": "GET",
             "url": rootSettings.instance + '/api/now/table/' + table,
             "headers": {
                 "Authorization": rootSettings.auth
             }
-        }
+        };
+
+        return _this._addProxy(options);
     };
+
+    ServiceNowSync.prototype._addProxy = function (options) {
+        let _this = this;
+        let rootSettings = _this.getRootSettings();
+
+        if (rootSettings.proxy) {
+            var domain = rootSettings.proxy.url.split('://')[1];
+            var protocol = rootSettings.proxy.url.split('://')[0];
+            var url = [protocol, '://'];
+            if (rootSettings.proxy.auth) {
+                let authDecoded = new Buffer.from(rootSettings.proxy.auth, 'base64').toString('ascii');
+                url.push(authDecoded);
+                url.push('@');
+            }
+
+            url.push(domain);
+
+            if (rootSettings.proxy.port) {
+                url.push(':');
+                url.push(rootSettings.proxy.port);
+            }
+
+            options.proxy = url.join('');
+        }
+
+        return options;
+    }
 
     ServiceNowSync.prototype.openRecordInBrowser = function () {
         let _this = this;
@@ -530,16 +754,16 @@ var ServiceNowSync = (function () {
             let folderSettings = _this.readSettings(filePath);
             let sys_id;
 
-            if(folderSettings.groupedChild){
+            if (folderSettings.groupedChild) {
                 sys_id = folderSettings.id;
             } else {
                 sys_id = folderSettings.files[fileName];
             }
-            
-            if(typeof sys_id !== 'undefined'){
+
+            if (typeof sys_id !== 'undefined') {
                 opn(rootSettings.instance + '/' + folderSettings.table + '.do?sys_id=' + sys_id);
             }
-            
+
         }
 
     };
@@ -647,10 +871,15 @@ var ServiceNowSync = (function () {
 
     };
 
-    ServiceNowSync.prototype.createGroupedFolder = function (table) {
+    ServiceNowSync.prototype.createGroupedFolder = function (table, nameOverride) {
         let _this = this;
+        let folderName = table;
+        if (typeof nameOverride !== 'undefined') {
+            folderName = nameOverride;
+        }
+
         let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
-        let groupedFolderPath = path.resolve(rootFolder, table);
+        let groupedFolderPath = path.resolve(rootFolder, folderName);
 
         let groupedFolderSettings = {
             "grouped": true,
@@ -671,6 +900,8 @@ var ServiceNowSync = (function () {
         }
 
         _this.writeSettings(groupedFolderPath, groupedFolderSettings);
+
+        return groupedFolderPath;
     };
 
     ServiceNowSync.prototype.createMultiFolder = function (table) {

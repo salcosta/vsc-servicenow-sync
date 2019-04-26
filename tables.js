@@ -1,4 +1,6 @@
 module.exports = {
+    "Custom Table": null,
+    "CapIO Suite": null,
     "asmt_metric": [{
         "field": "script",
         "extension": "js"
@@ -840,6 +842,19 @@ module.exports = {
     }],
     "workbench_config": [{
         "field": "phase_actions",
+        "extension": "js"
+    }],
+    "x_cerso_capio_test_case": [{
+        "field": "data",
+        "extension": "csv"
+    }, {
+        "field": "script",
+        "extension": "js"
+    }, {
+        "field": "on_before",
+        "extension": "js"
+    }, {
+        "field": "on_after",
         "extension": "js"
     }]
 };

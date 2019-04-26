@@ -71,6 +71,22 @@ This feature is not currently developed.
 1. Right click on a synchronized file and select 'Compare File to Server'
 2. If the remove file has been updated, you will be prompted to overwrite the local file, if you select 'No', no changes will be made.
 
+## Proxy Support
+**To enable a proxy**
+- Run the command 'SN Sync: Configure Proxy Settings'
+- Set the URL to the base URL of the proxy (http://myproxy)
+- Set the Port if there is one
+- Set the Username and Password if the Proxy uses Basic Auth
+
+**To disable the proxy**
+- Run the command 'SN Sync: Configure Proxy Settings'
+- Set the URL to blank
+
+## Sync Custom Table
+- Run the command 'SN Sync: Sync Table'
+- Select 'Custom Table'
+- Follow the prompts to sync the table
+
 
 ## Help
 

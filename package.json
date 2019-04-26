@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/salcosta/vsc-servicenow-sync.git"
   },
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "publisher": "anerrantprogrammer",
   "engines": {
@@ -52,6 +52,11 @@
         "command": "sn_sync.enterConnectionSettings",
         "title": "SN Sync: Connect To ServiceNow"
       },
+      {
+        "command": "sn_sync.enterProxySettings",
+        "title": "SN Sync: Enter Proxy Settings"
+      },
+
       {
         "command": "sn_sync.syncRecord",
         "title": "SN Sync: Sync Record"
