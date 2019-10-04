@@ -56,7 +56,6 @@
         "command": "sn_sync.enterProxySettings",
         "title": "SN Sync: Enter Proxy Settings"
       },
-
       {
         "command": "sn_sync.syncRecord",
         "title": "SN Sync: Sync Record"
@@ -97,8 +96,8 @@
   "dependencies": {
     "diff": "^3.4.0",
     "glob": "^7.1.2",
-    "html2plaintext": "^2.0.1",
-    "lodash": "^4.17.4",
+    "html-to-text": "^5.1.1",
+    "lodash": "^4.17.15",
     "opn": "^5.1.0",
     "request": "^2.83.0",
     "sanitize-filename": "^1.6.1"

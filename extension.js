@@ -7,7 +7,7 @@ const request = require('request');
 const jsdiff = require('diff');
 const glob = require('glob');
 const opn = require('opn');
-const html2plain = require('html2plaintext');
+const htmlToText = require('html-to-text');
 const sanitize = require("sanitize-filename");
 
 
@@ -187,7 +187,7 @@ var ServiceNowSync = (function () {
             _this._addProxy(evalOptions);
 
             request(evalOptions, function (error, response, body) {
-                cb(html2plain(body));
+                cb(htmlToText.fromString(body));
             });
         });
     };
