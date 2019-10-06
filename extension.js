@@ -187,10 +187,20 @@ var ServiceNowSync = (function () {
             _this._addProxy(evalOptions);
 
             request(evalOptions, function (error, response, body) {
-                cb(htmlToText.fromString(body));
+                var text = htmlToText.fromString(parseBody(body), { wordwrap: false });
+                cb(text);
             });
         });
     };
+
+    function parseBody(body) {
+        var result = body
+            .replace('<HTML><BODY>', '')
+            .replace('<HR/>', '<BR/>')
+            .replace('<HR/><PRE>', '<PRE>\n---&gt;\n')
+            .replace('<BR/></PRE><HR/></BODY></HTML>', '\n&lt;---</PRE>');
+        return result;
+    }
 
     ServiceNowSync.prototype.updateScope = function () {
         var _this = this;
@@ -410,7 +420,7 @@ var ServiceNowSync = (function () {
         let _this = this;
 
         let quickPickOptions = _.map(tableFieldList, (obj, key) => {
-            if(key=='CapIO Suite'){
+            if (key == 'CapIO Suite') {
                 return {
                     detail: '⸌{◔◔}⸍ CapIO Automated Testing by Cerna Solutions',
                     label: key
