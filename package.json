@@ -1,106 +1,105 @@
 {
-  "name": "servicenow-sync",
-  "author": "Sal Costa <costas0811@hotmail.com> (http://anerrantprogrammer.com",
-  "displayName": "ServiceNow Sync",
-  "description": "Sync records from ServiceNow to local files using VSC",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/salcosta/vsc-servicenow-sync.git"
-  },
-  "version": "0.2.3",
-  "license": "MIT",
-  "publisher": "anerrantprogrammer",
-  "engines": {
-    "vscode": "^1.18.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./extension",
-  "contributes": {
-    "menus": {
-      "explorer/context": [
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "sn_sync.syncRecord"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "sn_sync.syncMultipleRecords"
-        },
-        {
-          "when": "!explorerResourceIsFolder",
-          "command": "sn_sync.compareFile"
-        }
-      ],
-      "editor/context": [
-        {
-          "command": "sn_sync.openRecordInBrowser",
-          "group": "z_commands"
-        }
-      ]
+    "name": "servicenow-sync",
+    "author": "Sal Costa <costas0811@hotmail.com> (http://anerrantprogrammer.com",
+    "displayName": "ServiceNow Sync",
+    "description": "Sync records from ServiceNow to local files using VSC",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salcosta/vsc-servicenow-sync.git"
     },
-    "commands": [
-      {
-        "command": "sn_sync.syncTable",
-        "title": "SN Sync: Sync Table"
-      },
-      {
-        "command": "sn_sync.enterConnectionSettings",
-        "title": "SN Sync: Connect To ServiceNow"
-      },
-      {
-        "command": "sn_sync.enterProxySettings",
-        "title": "SN Sync: Enter Proxy Settings"
-      },
-
-      {
-        "command": "sn_sync.syncRecord",
-        "title": "SN Sync: Sync Record"
-      },
-      {
-        "command": "sn_sync.syncMultipleRecords",
-        "title": "SN Sync: Sync Multiple Records"
-      },
-      {
-        "command": "sn_sync.openRecordInBrowser",
-        "title": "SN Sync: Open Record In Browser"
-      },
-      {
-        "command": "sn_sync.updateScope",
-        "title": "SN Sync: Set Scope"
-      },
-      {
-        "command": "sn_sync.compareFile",
-        "title": "SN Sync: Compare File To Server"
-      },
-      {
-        "command": "sn_sync.evalScript",
-        "title": "SN Sync: Execute current file"
-      }
-    ]
-  },
-  "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
-  },
-  "devDependencies": {
-    "typescript": "^2.6.1",
-    "vscode": "^1.1.6",
-    "eslint": "^4.6.1",
-    "@types/node": "^7.0.43",
-    "@types/mocha": "^2.2.42"
-  },
-  "dependencies": {
-    "diff": "^3.4.0",
-    "glob": "^7.1.2",
-    "html2plaintext": "^2.0.1",
-    "lodash": "^4.17.4",
-    "opn": "^5.1.0",
-    "request": "^2.83.0",
-    "sanitize-filename": "^1.6.1"
-  }
+    "version": "0.2.4",
+    "license": "MIT",
+    "publisher": "anerrantprogrammer",
+    "engines": {
+        "vscode": "^1.18.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "menus": {
+            "explorer/context": [
+                {
+                    "when": "explorerResourceIsFolder",
+                    "command": "sn_sync.syncRecord"
+                },
+                {
+                    "when": "explorerResourceIsFolder",
+                    "command": "sn_sync.syncMultipleRecords"
+                },
+                {
+                    "when": "!explorerResourceIsFolder",
+                    "command": "sn_sync.compareFile"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "sn_sync.openRecordInBrowser",
+                    "group": "z_commands"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "sn_sync.syncTable",
+                "title": "SN Sync: Sync Table"
+            },
+            {
+                "command": "sn_sync.enterConnectionSettings",
+                "title": "SN Sync: Connect To ServiceNow"
+            },
+            {
+                "command": "sn_sync.enterProxySettings",
+                "title": "SN Sync: Enter Proxy Settings"
+            },
+            {
+                "command": "sn_sync.syncRecord",
+                "title": "SN Sync: Sync Record"
+            },
+            {
+                "command": "sn_sync.syncMultipleRecords",
+                "title": "SN Sync: Sync Multiple Records"
+            },
+            {
+                "command": "sn_sync.openRecordInBrowser",
+                "title": "SN Sync: Open Record In Browser"
+            },
+            {
+                "command": "sn_sync.updateScope",
+                "title": "SN Sync: Set Scope"
+            },
+            {
+                "command": "sn_sync.compareFile",
+                "title": "SN Sync: Compare File To Server"
+            },
+            {
+                "command": "sn_sync.evalScript",
+                "title": "SN Sync: Execute current file"
+            }
+        ]
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "eslint": "^4.6.1",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    },
+    "dependencies": {
+        "diff": "^3.4.0",
+        "glob": "^7.1.2",
+        "html-to-text": "^5.1.1",
+        "lodash": "^4.17.15",
+        "opn": "^5.1.0",
+        "request": "^2.83.0",
+        "sanitize-filename": "^1.6.1"
+    }
 }
