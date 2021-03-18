@@ -1,10 +1,17 @@
-# ServiceNow Sync
+# ServiceNow Sync 2021
 
-Allows you to save and edit ServiceNow records from Visual Studio Code.
+Allows you to save and edit ServiceNow records from Visual Studio Code.<br/>-- Based on a fork from [ServiceNow Sync](https://marketplace.visualstudio.com/items?itemName=anerrantprogrammer.servicenow-sync) extension built by anerrantprogrammer -- 
 
-## Installation
+## Build and installation
 
-[Visual Studio Code Market Place: ServiceNow Sync](https://marketplace.visualstudio.com/items?itemName=anerrantprogrammer.servicenow-sync)
+Clone the [repository](https://github.com/aquarilis/vsc-servicenow-sync-2021) and [build a .vsix file](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#packaging-extensions) from it. From the cloned repository folder, run:
+```vsce package```
+
+This will create a ```servicenow-sync-2021-0.3.0.vsix``` file which you can then install using the following command line:
+
+```code --install-extension servicenow-sync-2021-0.3.0.vsix```
+
+_Note that the original ServiceNow Sync extension should either be disabled or uninstalled when using this 2021 version._
 
 ## Usage
 
@@ -86,14 +93,3 @@ This feature is not currently developed.
 - Run the command 'SN Sync: Sync Table'
 - Select 'Custom Table'
 - Follow the prompts to sync the table
-
-
-## Help
-
-Help is available in the [ServiceNow Devs Slack Channel](https://sndevs.slack.com/messages)
-
-## Social
-
-[Twitter](https://twitter.com/sn_aug)
-[Blog](http://anerrantprogrammer.com)
-[Github](https://github.com/salcosta)
