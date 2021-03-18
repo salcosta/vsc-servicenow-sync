@@ -6,7 +6,7 @@ const _ = require('lodash');
 const request = require('request');
 const jsdiff = require('diff');
 const glob = require('glob');
-const opn = require('opn');
+const open = require('open');
 const html2plain = require('html2plaintext');
 const sanitize = require("sanitize-filename");
 
@@ -761,7 +761,7 @@ var ServiceNowSync = (function () {
             }
 
             if (typeof sys_id !== 'undefined') {
-                opn(rootSettings.instance + '/' + folderSettings.table + '.do?sys_id=' + sys_id);
+                open(rootSettings.instance + '/' + folderSettings.table + '.do?sys_id=' + sys_id);
             }
 
         }
