@@ -746,7 +746,7 @@ var ServiceNowSync = (function () {
     ServiceNowSync.prototype.openRecordInBrowser = function () {
         let _this = this;
         let rootSettings = _this.getRootSettings();
-        let fsPath = vscode.window.activeTextEditor._documentData._uri.fsPath;
+        let fsPath = vscode.window.activeTextEditor.document.uri.fsPath;
         let filePath = path.dirname(fsPath);
         let fileName = path.basename(fsPath);
 
