@@ -70,7 +70,7 @@
       },
       {
         "command": "sn_sync.updateScope",
-        "title": "SN Sync: Set Scope"
+        "title": "SN Sync: Set Scope for background script execution"
       },
       {
         "command": "sn_sync.compareFile",
@@ -78,7 +78,7 @@
       },
       {
         "command": "sn_sync.evalScript",
-        "title": "SN Sync: Execute current file"
+        "title": "SN Sync: Execute in background script"
       }
     ]
   },
