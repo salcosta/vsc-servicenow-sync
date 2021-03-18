@@ -96,7 +96,7 @@
   "dependencies": {
     "diff": "^3.4.0",
     "glob": "^7.1.2",
-    "html2plaintext": "^2.0.1",
+    "html-to-text": "^7.0.0",
     "lodash": "^4.17.21",
     "open": "^8.0.3",
     "request": "^2.83.0",
