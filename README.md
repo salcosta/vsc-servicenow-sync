@@ -4,14 +4,17 @@ Allows you to save and edit ServiceNow records from Visual Studio Code.<br/>-- B
 
 ## Build and installation
 
-Clone the [repository](https://github.com/aquarilis/vsc-servicenow-sync-2021) and [build a .vsix file](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#packaging-extensions) from it. From the cloned repository folder, run:
+As this version of this extension is not yet published to the Visual Code Marketplace, it is necessary to clone the repository(https://github.com/aquarilis/vsc-servicenow-sync-2021) locally, and [package it in a .vsix file](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#packaging-extensions) so that it can be installed into VS Code. 
+
+To do so, from a terminal in the cloned repository folder, run:
+
 ```vsce package```
 
-This will create a ```servicenow-sync-2021-0.3.0.vsix``` file which you can then install using the following command line:
+This will create a ```servicenow-sync-2021-0.3.0.vsix``` file which you can then share, or install using the following command line:
 
 ```code --install-extension servicenow-sync-2021-0.3.0.vsix```
 
-_Note that the original ServiceNow Sync extension should either be disabled or uninstalled when using this 2021 version._
+_Note that the original 'ServiceNow Sync' extension should either be disabled or uninstalled when using this 2021 version._
 
 ## Usage
 
