@@ -7,7 +7,9 @@ const request = require('request');
 const jsdiff = require('diff');
 const glob = require('glob');
 const open = require('open');
-const { htmlToText } = require('html-to-text');
+const {
+    htmlToText
+} = require('html-to-text');
 const sanitize = require("sanitize-filename");
 
 
@@ -187,11 +189,14 @@ var ServiceNowSync = (function () {
             _this._addProxy(evalOptions);
 
             request(evalOptions, function (error, response, body) {
-                try{
-                cb(htmlToText(body));
-                } catch(e){
-                    console.log(e);
-                }
+                cb(htmlToText((function (body) {
+                    return body.replace('<HTML><BODY>', '')
+                        .replace('<HR/>', '<BR/>')
+                        .replace('<HR/><PRE>', '<PRE>\n---&gt;\n')
+                        .replace('<BR/></PRE><HR/></BODY></HTML>', '\n&lt;---</PRE>');
+                })(body), {
+                    wordwrap: false
+                }));
             });
         });
     };
@@ -208,7 +213,10 @@ var ServiceNowSync = (function () {
                         "label": obj.name
                     };
                 });
-                quickPickItems.unshift({ "detail": "rhino.global", "label": "Global" });
+                quickPickItems.unshift({
+                    "detail": "rhino.global",
+                    "label": "Global"
+                });
                 vscode.window.showQuickPick(quickPickItems).then(function (selected) {
                     _this._updateScope(selected.detail);
                 });
@@ -414,7 +422,7 @@ var ServiceNowSync = (function () {
         let _this = this;
 
         let quickPickOptions = _.map(tableFieldList, (obj, key) => {
-            if(key=='CapIO Suite'){
+            if (key == 'CapIO Suite') {
                 return {
                     detail: '⸌{◔◔}⸍ CapIO Automated Testing by Cerna Solutions',
                     label: key
@@ -440,7 +448,9 @@ var ServiceNowSync = (function () {
                         vscode.window.showQuickPick(quickPickItems).then(function (selected) {
                             if (selected) {
                                 let path = _this.createGroupedFolder('x_cerso_capio_test_case', selected.label);
-                                _this.pullFile({ _fsPath: path }, undefined, 'test_suite=' + selected.detail);
+                                _this.pullFile({
+                                    _fsPath: path
+                                }, undefined, 'test_suite=' + selected.detail);
                             }
                         });
 
@@ -656,7 +666,9 @@ var ServiceNowSync = (function () {
 
         function createFiles(record) {
             let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
-            let folderPath = path.resolve(folder, sanitize(record[settings.display], { replacement: '_' }));
+            let folderPath = path.resolve(folder, sanitize(record[settings.display], {
+                replacement: '_'
+            }));
 
             let folderSettings = {
                 "groupedChild": true,
@@ -679,7 +691,9 @@ var ServiceNowSync = (function () {
         function createFile(record) {
             if (typeof settings.multi !== 'undefined' && settings.multi === true) {
                 _.each(subSettings, (setting) => {
-                    let fileName = sanitize(record[setting.display], { replacement: '_' }) + '.' + setting.extension;
+                    let fileName = sanitize(record[setting.display], {
+                        replacement: '_'
+                    }) + '.' + setting.extension;
                     let filePath = path.resolve(setting.folder, fileName);
                     fs.writeFileSync(filePath, record[setting.field]);
 
@@ -687,7 +701,9 @@ var ServiceNowSync = (function () {
                     _this.writeSettings(setting.folder, setting);
                 });
             } else {
-                let fileName = sanitize(record[settings.display], { replacement: '_' }) + '.' + settings.extension;
+                let fileName = sanitize(record[settings.display], {
+                    replacement: '_'
+                }) + '.' + settings.extension;
                 let filePath = path.resolve(folder, fileName);
                 fs.writeFileSync(filePath, record[settings.field]);
 
