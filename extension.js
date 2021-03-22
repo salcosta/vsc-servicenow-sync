@@ -422,18 +422,28 @@ var ServiceNowSync = (function () {
         let _this = this;
 
         let quickPickOptions = _.map(tableFieldList, (obj, key) => {
-            if (key == 'CapIO Suite') {
                 return {
-                    detail: '⸌{◔◔}⸍ CapIO Automated Testing by Cerna Solutions',
-                    label: key
+                    'label': key,
+                    'detail': null,
+                    'table_name': key
                 }
-            } else {
-                return key
-            }
+
         });
 
-        vscode.window.showQuickPick(quickPickOptions).then((table) => {
-            if (typeof table.label !== 'undefined' && table.label == 'CapIO Suite') {
+        quickPickOptions.unshift({
+            'label': 'CapIO Suite',
+            'detail': 'CapIO Automated Testing by Cerna Solutions',
+            'table_name': 'CapIO Suite'
+        });
+
+        quickPickOptions.unshift({
+            'label': 'Custom Table',
+            'detail': 'Synchronize a table which is not listed here',
+            'table_name': 'custom_table'
+        });
+
+        vscode.window.showQuickPick(quickPickOptions).then((userSelection) => {
+            if (typeof userSelection.label !== 'undefined' && userSelection.label == 'CapIO Suite') {
                 _this.listRecords('x_cerso_capio_test_suite', ['sys_id', 'name'].join(','), undefined, function (result) {
 
                     if (result) {
@@ -458,12 +468,12 @@ var ServiceNowSync = (function () {
                         vscode.window.setStatusBarMessage('❌️ No Suites Found', 2000);
                     }
                 });
-            } else if (table == 'Custom Table') {
+            } else if (userSelection.label == 'Custom Table') {
                 _this._syncCustomTable();
 
-            } else if (typeof tableFieldList[table] !== 'undefined') {
-                if (tableFieldList[table].length === 1) _this.createSingleFolder(table);
-                if (tableFieldList[table].length > 1) {
+            } else if (typeof tableFieldList[userSelection.table_name] !== 'undefined') {
+                if (tableFieldList[userSelection.table_name].length === 1) _this.createSingleFolder(userSelection.table_name);
+                if (tableFieldList[userSelection.table_name].length > 1) {
                     let multiFolderChoiceQuickPick = [
                         'Group files by Field',
                         'Group files by Record',
@@ -471,9 +481,9 @@ var ServiceNowSync = (function () {
 
                     vscode.window.showQuickPick(multiFolderChoiceQuickPick).then((groupChoice) => {
                         if (groupChoice === 'Group files by Field') {
-                            _this.createMultiFolder(table);
+                            _this.createMultiFolder(userSelection.table_name);
                         } else {
-                            _this.createGroupedFolder(table);
+                            _this.createGroupedFolder(userSelection.table_name);
                         }
                     });
                 }
