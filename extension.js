@@ -419,77 +419,83 @@ var ServiceNowSync = (function () {
     };
 
     ServiceNowSync.prototype.syncTable = function () {
-            let _this = this;
+        let _this = this;
 
-            let quickPickOptions = _.map(tableFieldList, (obj, key) => {
-                return {
-                    'label': tableFieldList[key]['table_display_name'] + ' (' + key + ')',
-                    'detail': null,
-                    'table_name': key,
-                    'table_display_name': tableFieldList[key]['table_display_name']
-                }
+        let quickPickOptions = _.map(tableFieldList, (obj, key) => {
+            return {
+                'label': tableFieldList[key]['table_display_name'] + ' (' + key + ')',
+                'detail': null,
+                'table_name': key,
+                'table_display_name': tableFieldList[key]['table_display_name']
+            }
 
-            });
+        });
 
-            quickPickOptions.unshift({
-                'label': 'CapIO Suite',
-                'detail': 'CapIO Automated Testing by Cerna Solutions',
-                'table_name': 'CapIO Suite'
-            });
+        quickPickOptions.unshift({
+            'label': 'CapIO Suite',
+            'detail': 'CapIO Automated Testing by Cerna Solutions',
+            'table_name': 'CapIO Suite'
+        });
 
-            quickPickOptions.unshift({
-                'label': 'Custom Table',
-                'detail': 'Synchronize a table which is not listed here',
-                'table_name': 'custom_table'
-            });
+        quickPickOptions.unshift({
+            'label': 'Custom Table',
+            'detail': 'Synchronize a table which is not listed here',
+            'table_name': 'custom_table'
+        });
 
-            vscode.window.showQuickPick(quickPickOptions).then((userSelection) => {
+        vscode.window.showQuickPick(quickPickOptions).then((userSelection) => {
 
-                if (typeof userSelection.label !== 'undefined' && userSelection.label == 'CapIO Suite') {
-                    _this.listRecords('x_cerso_capio_test_suite', ['sys_id', 'name'].join(','), undefined, function (result) {
+            if (typeof userSelection.label !== 'undefined' && userSelection.label == 'CapIO Suite') {
+                _this.listRecords('x_cerso_capio_test_suite', ['sys_id', 'name'].join(','), undefined, function (result) {
 
-                        if (result) {
-                            records = result;
-                            let quickPickItems = _.map(result, function (obj) {
-                                return {
-                                    "detail": obj.sys_id,
-                                    "label": obj.name
-                                };
-                            });
+                    if (result) {
+                        records = result;
+                        let quickPickItems = _.map(result, function (obj) {
+                            return {
+                                "detail": obj.sys_id,
+                                "label": obj.name
+                            };
+                        });
 
-                            vscode.window.showQuickPick(quickPickItems).then(function (selected) {
-                                if (selected) {
-                                    let path = _this.createGroupedFolder('x_cerso_capio_test_case', selected.label);
-                                    _this.pullFile({
-                                        _fsPath: path
-                                    }, undefined, 'test_suite=' + selected.detail);
-                                }
-                            });
+                        vscode.window.showQuickPick(quickPickItems).then(function (selected) {
+                            if (selected) {
+                                let path = _this.createGroupedFolder('x_cerso_capio_test_case', selected.label);
+                                _this.pullFile({
+                                    _fsPath: path
+                                }, undefined, 'test_suite=' + selected.detail);
+                            }
+                        });
 
-                        } else {
-                            vscode.window.setStatusBarMessage('❌️ No Suites Found', 2000);
-                        }
-                    });
-                } else if (userSelection.label == 'Custom Table') {
-                    _this._syncCustomTable();
-                } else if (typeof tableFieldList[userSelection.table_name] !== 'undefined') {
+                    } else {
+                        vscode.window.setStatusBarMessage('❌️ No Suites Found', 2000);
+                    }
+                });
+            } else if (userSelection.label == 'Custom Table') {
+                _this._syncCustomTable();
+            } else if (typeof tableFieldList[userSelection.table_name] !== 'undefined') {
 
-                    let folderNameQuickPickItems = [
-                        {
-                            label: "Create folder with table display name",
-                            detail: userSelection.table_display_name,
-                            folderName : userSelection.table_display_name
-                        },
-                        {
-                            label: "Create folder with table technical name",
-                            detail: userSelection.table_name,
-                            folderName : userSelection.table_name
-                        },
-                      
-                    ];
-                
-                    vscode.window.showQuickPick(folderNameQuickPickItems).then((folderChoice) => {
-                        let folderName = folderChoice.folderName;
+                let folderNameQuickPickItems = [{
+                        label: "Create folder with table display name",
+                        detail: userSelection.table_display_name,
+                        folderName: userSelection.table_display_name
+                    },
+                    {
+                        label: "Create folder with table technical name",
+                        detail: userSelection.table_name,
+                        folderName: userSelection.table_name
+                    },
+
+                ];
+
+                vscode.window.showQuickPick(folderNameQuickPickItems).then((folderChoice) => {
+                    let folderName = folderChoice.folderName;
+
+                    let rootFolder = vscode.workspace.workspaceFolders[0].uri._fsPath;
+                    let rootFolderPath = path.resolve(rootFolder, folderName);
+
+                    if (fs.existsSync(rootFolderPath)) {
+                        vscode.window.setStatusBarMessage('❌️ Folder ' + folderName + ' already exists', 2000);
+                    } else {
                         
                         if (tableFieldList[userSelection.table_name]['field_list_array'].length === 1) {
                             _this.createSingleFolder(userSelection.table_name, folderName);
@@ -507,14 +513,18 @@ var ServiceNowSync = (function () {
                                 }
                             });
                         }
-                    });
-           
 
-                } else {
-                    vscode.window.setStatusBarMessage('❌️ Error trying to sync table ' + userSelection.label, 2000);
-                }
+                        vscode.window.setStatusBarMessage('✔️ folder ' + folderName + ' created', 2000);
 
-            });
+                    }
+                });
+
+
+            } else {
+                vscode.window.setStatusBarMessage('❌️ Error trying to sync table ' + userSelection.label, 2000);
+            }
+
+        });
     };
 
     ServiceNowSync.prototype._syncCustomTable = function () {
