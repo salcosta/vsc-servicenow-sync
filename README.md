@@ -36,7 +36,7 @@ A `service-now.json` file will be created in the root workspace folder.
 
 1. From the working folder which is set up with a ServiceNow instance, open the Command Palette (Ctrl+Shift+P).
 2. Select 'SN Sync: Sync Table'.
-3. Select the table name from the Quick Pick List.
+3. Select the table from the Quick Pick List.
 
 A folder will be created in the root workspace folder and will contain a `service-now.json` file.  You may override the default settings by changing this file directly.
 

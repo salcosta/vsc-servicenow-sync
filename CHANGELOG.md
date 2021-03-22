@@ -8,7 +8,7 @@ All notable changes to the "servicenow-sync-2021" extension will be documented i
 ### Fixed
 - Open the current record in a web browser
 ### Added
-- nothing
+- Folder name choice and checks before creating new folder during 'SN Sync: Sync Table' command
 ### Updated
 - tar, lodash, opn->open packages
 - README
