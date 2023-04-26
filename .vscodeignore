@@ -1,7 +1,13 @@
 .vscode/**
-.vscode-test/**
 test/**
 .gitignore
 jsconfig.json
-vsc-extension-quickstart.md
 .eslintrc.json
+out/**
+src/**
+test-resources/**
+tsconfig.json
+webpack.config.js
+.mocharc.js
+settings.json
+tests.md

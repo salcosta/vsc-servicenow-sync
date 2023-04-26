@@ -1,6 +1,4 @@
 module.exports = {
-    "Custom Table": null,
-    "CapIO Suite": null,
     "asmt_metric": [{
         "field": "script",
         "extension": "js"

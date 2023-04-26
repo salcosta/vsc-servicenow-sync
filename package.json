@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/salcosta/vsc-servicenow-sync.git"
   },
-  "version": "0.2.3",
+  "version": "0.4.0",
   "license": "MIT",
   "publisher": "anerrantprogrammer",
   "engines": {
@@ -32,6 +32,14 @@
           "command": "sn_sync.syncMultipleRecords"
         },
         {
+          "when": "explorerResourceIsFolder",
+          "command": "sn_sync.refreshFolder"
+        },
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "sn_sync.refreshFolderQuery"
+        },
+        {
           "when": "!explorerResourceIsFolder",
           "command": "sn_sync.compareFile"
         }
@@ -46,28 +54,43 @@
     "commands": [
       {
         "command": "sn_sync.syncTable",
-        "title": "SN Sync: Sync Table"
+        "title": "SN Sync: Sync table"
       },
       {
         "command": "sn_sync.enterConnectionSettings",
-        "title": "SN Sync: Connect To ServiceNow"
+        "title": "SN Sync: Connect to ServiceNow"
       },
+      {
+        "command": "sn_sync.syncApplication",
+        "title": "SN Sync: Sync application"
+      },      
       {
         "command": "sn_sync.enterProxySettings",
-        "title": "SN Sync: Enter Proxy Settings"
+        "title": "SN Sync: Enter proxy settings"
       },
-
+      {
+        "command": "sn_sync.refreshOauthToken",
+        "title": "SN Sync: Refresh OAuth token"
+      },
       {
         "command": "sn_sync.syncRecord",
-        "title": "SN Sync: Sync Record"
+        "title": "SN Sync: Sync record"
       },
       {
         "command": "sn_sync.syncMultipleRecords",
-        "title": "SN Sync: Sync Multiple Records"
+        "title": "SN Sync: Sync with query"
       },
       {
+        "command": "sn_sync.refreshFolder",
+        "title": "SN Sync: Refresh files"
+      },
+      {
+        "command": "sn_sync.refreshFolderQuery",
+        "title": "SN Sync: Refresh files with query"
+      },      
+      {
         "command": "sn_sync.openRecordInBrowser",
-        "title": "SN Sync: Open Record In Browser"
+        "title": "SN Sync: Open record in browser"
       },
       {
         "command": "sn_sync.updateScope",
@@ -75,7 +98,7 @@
       },
       {
         "command": "sn_sync.compareFile",
-        "title": "SN Sync: Compare File To Server"
+        "title": "SN Sync: Compare file to server"
       },
       {
         "command": "sn_sync.evalScript",
@@ -84,23 +107,25 @@
     ]
   },
   "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "typescript": "^2.6.1",
-    "vscode": "^1.1.6",
-    "eslint": "^4.6.1",
+    "@types/mocha": "^2.2.42",
     "@types/node": "^7.0.43",
-    "@types/mocha": "^2.2.42"
+    "eslint": "^8.5.0",
+    "typescript": "^2.6.1",
+    "vscode": "^0.9.9",
+    "vscode-extension-tester": "^4.2.3"
   },
   "dependencies": {
     "diff": "^3.4.0",
-    "glob": "^7.1.2",
     "html2plaintext": "^2.0.1",
     "lodash": "^4.17.4",
-    "opn": "^5.1.0",
+    "open": "^8.4.0",
     "request": "^2.83.0",
-    "sanitize-filename": "^1.6.1"
+    "sanitize-filename": "^1.6.1",
+    "tmp": "^0.2.1",
+    "url-parse": "^1.5.3",
+    "uuid": "^3.3.2"
   }
 }

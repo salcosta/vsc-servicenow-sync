@@ -1,3 +1,10 @@
 node_modules
 .vscode-test/
 *.vsix
+/out
+tests.md
+/test-resources
+.mocharc.js
+settings.json
+webpack.config.js
+/src
