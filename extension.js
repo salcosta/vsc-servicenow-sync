@@ -672,11 +672,14 @@ var ServiceNowSync = (function () {
       _this._addProxy(evalOptions);
 
       request(evalOptions, function (error, response, body) {
-        try{
-            cb(htmlToText(body));
-            } catch(e){
-                console.log(e);
-            }
+        cb(htmlToText((function (body) {
+            return body.replace('<HTML><BODY>', '')
+                .replace('<HR/>', '<BR/>')
+                .replace('<HR/><PRE>', '<PRE>\n---&gt;\n')
+                .replace('<BR/></PRE><HR/></BODY></HTML>', '\n&lt;---</PRE>');
+        })(body), {
+            wordwrap: false
+        }));
       });
     });
   };
