@@ -6,7 +6,7 @@ const _ = require("lodash");
 const request = require("request");
 const jsdiff = require("diff");
 const open = require("open");
-const html2plain = require("html2plaintext");
+const { htmlToText } = require('html-to-text');
 const sanitize = require("sanitize-filename");
 const tmp = require("tmp");
 const urlParse = require("url-parse");
@@ -672,7 +672,14 @@ var ServiceNowSync = (function () {
       _this._addProxy(evalOptions);
 
       request(evalOptions, function (error, response, body) {
-        cb(html2plain(body));
+        cb(htmlToText((function (body) {
+            return body.replace('<HTML><BODY>', '')
+                .replace('<HR/>', '<BR/>')
+                .replace('<HR/><PRE>', '<PRE>\n---&gt;\n')
+                .replace('<BR/></PRE><HR/></BODY></HTML>', '\n&lt;---</PRE>');
+        })(body), {
+            wordwrap: false
+        }));
       });
     });
   };
