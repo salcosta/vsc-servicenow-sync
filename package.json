@@ -1,15 +1,15 @@
 {
-  "name": "servicenow-sync",
-  "author": "Sal Costa <costas0811@hotmail.com> (http://anerrantprogrammer.com",
-  "displayName": "ServiceNow Sync",
-  "description": "Sync records from ServiceNow to local files using VSC",
+  "name": "servicenow-sync-2023",
+  "author": "forked from Sal Costa <costas0811@hotmail.com> (http://anerrantprogrammer.com",
+  "displayName": "ServiceNow Sync 2023",
+  "description": "Sync records from ServiceNow to local files using VSC - aquarilis'",
   "repository": {
     "type": "git",
     "url": "https://github.com/salcosta/vsc-servicenow-sync.git"
   },
-  "version": "0.4.0",
+  "version": "0.2.0",
   "license": "MIT",
-  "publisher": "anerrantprogrammer",
+  "publisher": "aquarilis",
   "engines": {
     "vscode": "^1.18.0"
   },
