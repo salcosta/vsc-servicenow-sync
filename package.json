@@ -48,6 +48,10 @@
         {
           "command": "sn_sync.openRecordInBrowser",
           "group": "z_commands"
+        },
+        {
+            "command": "sn_sync.evalScript",
+            "group": "z_commands" 
         }
       ]
     },
