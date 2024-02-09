@@ -609,6 +609,7 @@ var ServiceNowSync = (function () {
     _this.evalScript(script, rootSettings.scope, function (outputStr) {
       executeMessage.dispose();
       _this.outputChannel.show(true);
+      _this.outputChannel.clear();
       _this.outputChannel.appendLine(outputStr);
     });
   };
